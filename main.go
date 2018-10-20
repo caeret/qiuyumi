@@ -20,9 +20,9 @@ func main() {
 					return err
 				}
 				if ok {
-					fmt.Printf("%s ok\n", name)
+					fmt.Printf("%-16s available\n", name)
 				} else {
-					fmt.Printf("%s exist\n", name)
+					fmt.Printf("%-16s invalid\n", name)
 				}
 				return nil
 			})

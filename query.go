@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-var client = &http.Client{Timeout: time.Second * 10}
+var client = &http.Client{Timeout: time.Second * 5}
 
 type result struct {
 	Status    bool   `json:"status"`

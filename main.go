@@ -7,30 +7,63 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
 	verbose bool
+	n       int
+	queue   = make(chan string, 1024)
 )
 
 func init() {
 	flag.BoolVar(&verbose, "v", false, "verbose output.")
+	flag.IntVar(&n, "n", 10, "count of thread to execute the queries.")
 	flag.Parse()
+	if n < 1 {
+		n = 1
+	}
 }
 
 func main() {
 	if len(flag.Args()) > 0 {
-		for _, name := range flag.Args() {
-			tryQuery(name)
-		}
-		return
+		go readFromCommand()
+	} else {
+		go readFromStdin()
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(n)
+	for i := 0; i < n; i++ {
+		go func() {
+			defer wg.Done()
+			for name := range queue {
+				name = strings.TrimSpace(name)
+				if name != "" {
+					tryQuery(name)
+				}
+			}
+		}()
+	}
+
+	wg.Wait()
+}
+
+func readFromCommand() {
+	defer close(queue)
+	for _, name := range flag.Args() {
+		queue <- name
+	}
+}
+
+func readFromStdin() {
+	defer close(queue)
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		text, err := reader.ReadString('\n')
-		if text = strings.Trim(text, "\n"); text != "" {
-			tryQuery(text)
+		if text != "" {
+			queue <- text
 		}
 		if err != nil {
 			if err == io.EOF {

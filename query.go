@@ -1,4 +1,4 @@
-package main
+package qiuyumi
 
 import (
 	"encoding/json"
@@ -19,7 +19,7 @@ type result struct {
 	From      string `json:"from"`
 }
 
-func query(name string) (n string, available bool, err error) {
+func Query(name string) (n string, available bool, err error) {
 	name = strings.Trim(name, ".")
 	domain := "com"
 	if idx := strings.LastIndex(name, "."); idx != -1 {

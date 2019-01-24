@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/caeret/qiuyumi"
 )
 
 var (
@@ -75,11 +77,11 @@ func readFromStdin() {
 }
 
 func tryQuery(name string) {
-	err := try(3, time.Second, func() error {
-		debug("try to query %s", name)
-		name, ok, err := query(name)
+	err := qiuyumi.Try(3, time.Second, func() error {
+		debug("try to Query %s", name)
+		name, ok, err := qiuyumi.Query(name)
 		if err != nil {
-			debug("fail to query: %s %s", name, err.Error())
+			debug("fail to Query: %s %s", name, err.Error())
 			return err
 		}
 		if ok {
